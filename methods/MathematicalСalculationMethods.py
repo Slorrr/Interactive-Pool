@@ -19,8 +19,12 @@ def findSimmilarLines(linesArray,maxDiff = 10):
         count = 0
         lines = []
         deg1 = findAngelFromLine(linesArray[i][0])
+        if deg1 == 90 or deg1 == 180:
+            break
         for j in range(0,len(linesArray)-1):
                 deg2 = findAngelFromLine(linesArray[j][0])
+                if deg2 == 90 or deg2 == 180:
+                    break
                 if (abs(deg1-deg2) < maxDiff) or (abs(deg1-deg2) > 360-maxDiff):
                     count += 1
                     lines.append(linesArray[j])

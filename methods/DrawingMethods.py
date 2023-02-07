@@ -9,7 +9,7 @@ def DrawCircle(image, circles):
             for (x, y, r) in circles:
                 # Draw the circle in the output image
                 cv.circle(image, (x, y), r, (0, 255, 0), 2)
-                cv.circle(image, (x, y), 2, (0, 0, 255), 2)
+                cv.circle(image, (x, y), 0, (0, 0, 255), 2)
             countCircles = len(circles)
             return countCircles
     except TypeError:

@@ -1,7 +1,7 @@
 import numpy as np
 import cv2 as cv
 from methods import MathematicalСalculationMethods
-"""
+
 # Create a black image
 height = 512
 width = 512
@@ -17,4 +17,3 @@ while True:
 		break
 
 cv.destroyAllWindows()
-"""

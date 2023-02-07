@@ -6,7 +6,7 @@ import methods.DrawingMethods
 import methods.MathematicalСalculationMethods
 
 # Открываем видеопоток с камеры устройства под номером 0
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(1)
 
 # Если видеопоток не может быть открыт, вызываем исключение
 if not cap.isOpened():
@@ -24,7 +24,7 @@ while True:
 
     # Получаем очередной кадр с камеры
     ret, frame = cap.read()
-
+    
     # Если кадр получить не удалось, выходим из цикла
     if not ret:
         break
@@ -36,7 +36,7 @@ while True:
     gray = cv.GaussianBlur(gray, (5, 5), 0)
 
     # Ищем окружности в изображении
-    circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1,20, param1=90, param2=70, minRadius=1, maxRadius=100)
+    circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1,20, param1=40, param2=20, minRadius=5, maxRadius=20)
 
     # Проверяем, были ли обнаружены круги
     if circles is not None:
