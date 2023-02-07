@@ -24,7 +24,10 @@ while True:
 
     # Получаем очередной кадр с камеры
     ret, frame = cap.read()
-    
+
+    width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+
     # Если кадр получить не удалось, выходим из цикла
     if not ret:
         break
@@ -55,9 +58,21 @@ while True:
     #    # Вызываем метод DrawLine из класса DrawingMethods, который рисует линии на изображении
     #    countLines = methods.DrawingMethods.DrawLines(frame, simlines)
     
-    if lines is not None:
+    if lines is not None and len(lines) > 0:
         simlines = methods.MathematicalСalculationMethods.findSimmilarLines(lines,2)
-        methods.MathematicalСalculationMethods.averageLineWithDraws(frame, simlines)
+        if len(simlines) > 0:
+            #methods.MathematicalСalculationMethods.averageLineWithDraws(frame, simlines)
+            x1,y1,x2,y2 = methods.MathematicalСalculationMethods.averageLineReturnsLine(simlines)
+            k, b = methods.MathematicalСalculationMethods.getLineEquation(x1,y1,x2,y2)
+            x1 = 0
+            if int(k*x1+b):
+                    y1 = int(k*x1+b)
+            x2 = width
+            if int(k*x2+b):
+                    y2 = int(k*x2+b)
+            print("start = ",x1,y1,"finish = ",x2,y2)
+            cv.line(frame,(x1,y1),(x2,y2),(255,0,0),2)
+
     
     # Отображаем изображение с кругами и линиями
     cv.imshow("Camera", frame)

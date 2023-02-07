@@ -10,7 +10,7 @@ def findAngelFromLine(line):
     x1,y1,x2,y2 = line
     return math.degrees(math.atan2(y2 - y1, x2 - x1))
 
-def findSimmilarLines(linesArray,maxDiff = 10):
+def findSimmilarLines(linesArray,maxDiff = 0):
     #Количество "похожих" отрезков
     avgCount = 0
     #Промежуточный массив отрезков 
@@ -36,7 +36,7 @@ def findSimmilarLines(linesArray,maxDiff = 10):
             maxLines = lines
     return maxLines
 
-def averageLineReturnsLine(image, lines):
+def averageLineReturnsLine(lines):
     x1_sum = 0
     y1_sum = 0
     x2_sum = 0
@@ -69,3 +69,12 @@ def averageLineWithDraws(image, lines):
     x2_avg = x2_sum // len(lines)
     y2_avg = y2_sum // len(lines)
     cv.line(image, (x1_avg, y1_avg), (x2_avg, y2_avg), (0, 0, 255), 2)
+
+#slope = k
+#intercept = b
+#y = kx + b
+def getLineEquation(x1,y1,x2,y2):
+    slope = (y2 - y1) / (x2 - x1)
+    intercept = y1 - slope * x1
+    return (slope, intercept)
+
