@@ -6,7 +6,7 @@ import methods.DrawingMethods
 import methods.MathematicalСalculationMethods
 
 # Открываем видеопоток с камеры устройства под номером 0
-cap = cv.VideoCapture(1)
+cap = cv.VideoCapture(0)
 
 # Если видеопоток не может быть открыт, вызываем исключение
 if not cap.isOpened():
@@ -45,14 +45,20 @@ while True:
 
     # Применяем фильтр Канни для выделения краев
     canny = cv.Canny(gray, 50, 200, None, 3)
+    
     # Определяем линии на изображении с помощью метода HoughLinesP
     lines = cv.HoughLinesP(canny, rho = 1, theta = np.pi/180, threshold = None, minLineLength = 50, maxLineGap = 10) 
+    
     # Проверяем, были ли обнаружены линии
+    #if lines is not None:
+    #    simlines = methods.MathematicalСalculationMethods.findSimmilarLines(lines,2)
+    #    # Вызываем метод DrawLine из класса DrawingMethods, который рисует линии на изображении
+    #    countLines = methods.DrawingMethods.DrawLines(frame, simlines)
+    
     if lines is not None:
         simlines = methods.MathematicalСalculationMethods.findSimmilarLines(lines,2)
-        # Вызываем метод DrawLine из класса DrawingMethods, который рисует линии на изображении
-        countLines = methods.DrawingMethods.DrawLine(frame, simlines)
-
+        methods.MathematicalСalculationMethods.averageLineWithDraws(frame, simlines)
+    
     # Отображаем изображение с кругами и линиями
     cv.imshow("Camera", frame)
 
@@ -79,5 +85,6 @@ while True:
         break
 # Освободить объект захвата
 cap.release()
+
 # Закрыть все окна 
 cv.destroyAllWindows()

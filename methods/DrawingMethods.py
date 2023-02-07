@@ -15,7 +15,7 @@ def DrawCircle(image, circles):
     except TypeError:
         pass
 
-def DrawLine(image,lines):
+def DrawLines(image,lines):
     # Check if any lines were detected
     if lines is not None:
         # Loop over the lines
@@ -25,4 +25,7 @@ def DrawLine(image,lines):
             cv.line(image, (x1, y1), (x2, y2), (0, 0, 255), 2)
         countLines = len(lines)
         return countLines
-    
+
+def DrawLine(image,line):
+    x1, y1, x2, y2 = line[0]
+    cv.line(image, (x1, y1), (x2, y2), (0, 0, 255), 2)

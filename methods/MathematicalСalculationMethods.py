@@ -1,4 +1,7 @@
 import math
+import cv2 as cv
+import numpy as np
+import methods.DrawingMethods
 
 def findAngleFromPoints(x1,y1,x2,y2):
     return math.degrees(math.atan2(y2 - y1, x2 - x1))
@@ -33,3 +36,36 @@ def findSimmilarLines(linesArray,maxDiff = 10):
             maxLines = lines
     return maxLines
 
+def averageLineReturnsLine(image, lines):
+    x1_sum = 0
+    y1_sum = 0
+    x2_sum = 0
+    y2_sum = 0
+    for line in lines:
+        x1,y1,x2,y2 = line[0]
+        x1_sum += x1
+        y1_sum += y1
+        x2_sum += x2
+        y2_sum += y2
+    x1_avg = x1_sum // len(lines)
+    y1_avg = y1_sum // len(lines)
+    x2_avg = x2_sum // len(lines)
+    y2_avg = y2_sum // len(lines)
+    return(x1_avg,y1_avg,x2_avg,y2_avg)
+
+def averageLineWithDraws(image, lines):
+    x1_sum = 0
+    y1_sum = 0
+    x2_sum = 0
+    y2_sum = 0
+    for line in lines:
+        x1,y1,x2,y2 = line[0]
+        x1_sum += x1
+        y1_sum += y1
+        x2_sum += x2
+        y2_sum += y2
+    x1_avg = x1_sum // len(lines)
+    y1_avg = y1_sum // len(lines)
+    x2_avg = x2_sum // len(lines)
+    y2_avg = y2_sum // len(lines)
+    cv.line(image, (x1_avg, y1_avg), (x2_avg, y2_avg), (0, 0, 255), 2)
