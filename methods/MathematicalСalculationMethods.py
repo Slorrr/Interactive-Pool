@@ -2,6 +2,7 @@ import math
 import cv2 as cv
 import numpy as np
 import methods.DrawingMethods
+import copy
 
 def findAngleFromPoints(x1,y1,x2,y2):
     return math.degrees(math.atan2(y2 - y1, x2 - x1))
@@ -79,7 +80,7 @@ def getLineEquation(x1,y1,x2,y2):
     return (slope, intercept)
 
 
-def distanceBetweenSegments(start1, end1, start2, end2):
+def DistanceBetweenSegments(start1, end1, start2, end2):
     x1, y1 = start1
     x2, y2 = end1
     x3, y3 = start2
@@ -112,3 +113,29 @@ def distanceBetweenSegments(start1, end1, start2, end2):
     # Otherwise, return None
     return None
 
+def extendLineToIntersection2(width, height, originalFrame, frame, line):
+    x1,y1,x2,y2 = line
+    #print(x1,y1,x2,y2)
+    k,b = getLineEquation(x1,y1,x2,y2)
+    #print(k,b)
+    minusX = x1
+    plusX = x1
+
+    
+    while True:
+        if plusX+1 < width and k*(plusX+1)+b >= 0 and k*(plusX+1)+b <= height:
+            plusX += 1
+            plusY = int(k*plusX+b)
+            fuckingFrame = copy.deepcopy(originalFrame)
+            print(k,b)
+            #r,g,b = fuckingFrame[int(k*plusX+b),plusX]
+            cv.line(frame, (100, 100), (300, 500), (0, 0, 255), 10) 
+            cv.line(frame, (x1,y1), (plusX,int(k*plusX+b)), (0, 0, 255), 2) 
+            line = x1, y1, plusX, plusY
+            #print(x1,y1,plusX,plusY)
+            #print(r,g,b)
+            #if r == 0 and g == 255 and b == 0:
+            #    print("green")
+            #    return plusX,plusY
+        else:
+            break

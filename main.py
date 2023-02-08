@@ -24,7 +24,8 @@ while True:
 
     # Получаем очередной кадр с камеры
     ret, frame = cap.read()
-
+    originalFrame = frame.copy()
+    #methods.MathematicalСalculationMethods.extendLineToIntersection(originalFrame)
     width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
 
@@ -39,12 +40,13 @@ while True:
     gray = cv.GaussianBlur(gray, (5, 5), 0)
 
     # Ищем окружности в изображении
-    circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1,20, param1=40, param2=20, minRadius=5, maxRadius=20)
+    circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1,20, param1=70, param2=35, minRadius=5, maxRadius=50)
 
-    # Проверяем, были ли обнаружены круги
-    #if circles is not None:
-            # Вызываем метод DrawCircle из класса DrawingMethods, который рисует круги на изображении
-            #countCircles = methods.DrawingMethods.DrawCircle(frame, circles)
+    #Проверяем, были ли обнаружены круги
+    if circles is not None:
+            #Вызываем метод DrawCircle из класса DrawingMethods, который рисует круги на изображении
+            countCircles = methods.DrawingMethods.DrawCircle(frame, circles)
+            methods.DrawingMethods.DrawCircle(originalFrame, circles)
 
     # Применяем фильтр Канни для выделения краев
     canny = cv.Canny(gray, 50, 200, None, 3)
@@ -54,7 +56,7 @@ while True:
     if lines is not None:
         for line in lines:
            x1,y1,x2,y2 = line[0]
-           cv.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+           cv.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 1)
 
     # Проверяем, были ли обнаружены линии
     #if lines is not None:
@@ -67,18 +69,25 @@ while True:
         if len(simlines) > 0:
             #methods.MathematicalСalculationMethods.averageLineWithDraws(frame, simlines)
             x1,y1,x2,y2 = methods.MathematicalСalculationMethods.averageLineReturnsLine(simlines)
+            simLine = x1,y1,x2,y2
+            
+
             k, b = methods.MathematicalСalculationMethods.getLineEquation(x1,y1,x2,y2)
             try:
                 x1 = 0
                 y1 = int(k*x1+b)
                 x2 = width
                 y2 = int(k*x2+b)
-                print("start = ",x1,y1,"finish = ",x2,y2)
+                #print("start = ",x1,y1,"finish = ",x2,y2)
                 cv.line(frame,(x1,y1),(x2,y2),(255,0,0),2)
+                avgLine = x1,y1,x2,y2
             except Exception:
                 pass
+            try:
+                methods.MathematicalСalculationMethods.extendLineToIntersection2(width,height,originalFrame,frame,avgLine)
+            except:
+                pass
 
-    
     # Отображаем изображение с кругами и линиями
     cv.imshow("Camera", frame)
 

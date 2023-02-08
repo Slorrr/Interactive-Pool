@@ -27,5 +27,5 @@ def DrawLines(image,lines):
         return countLines
 
 def DrawLine(image,line):
-    x1, y1, x2, y2 = line[0]
+    x1, y1, x2, y2 = line
     cv.line(image, (x1, y1), (x2, y2), (0, 0, 255), 2)
