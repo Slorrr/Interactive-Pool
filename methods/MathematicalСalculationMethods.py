@@ -10,7 +10,7 @@ def findAngelFromLine(line):
     x1,y1,x2,y2 = line
     return math.degrees(math.atan2(y2 - y1, x2 - x1))
 
-def findSimmilarLines(linesArray,maxDiff = 0):
+def findSimmilarLines(linesArray,maxDiff = 3):
     #Количество "похожих" отрезков
     avgCount = 0
     #Промежуточный массив отрезков 
@@ -77,4 +77,38 @@ def getLineEquation(x1,y1,x2,y2):
     slope = (y2 - y1) / (x2 - x1)
     intercept = y1 - slope * x1
     return (slope, intercept)
+
+
+def distanceBetweenSegments(start1, end1, start2, end2):
+    x1, y1 = start1
+    x2, y2 = end1
+    x3, y3 = start2
+    x4, y4 = end2
+
+    # Calculate the denominator in the formula
+    denominator = ((x2 - x1) * (y4 - y3)) - ((y2 - y1) * (x4 - x3))
+
+    # If the denominator is zero, the segments are parallel
+    if denominator == 0:
+        return None
+
+    # Calculate the numerator in the formula
+    numerator = ((y1 - y3) * (x4 - x3)) - ((x1 - x3) * (y4 - y3))
+
+    # Calculate the fraction along the first segment
+    ua = numerator / denominator
+
+    # Calculate the fraction along the second segment
+    ub = ((y1 - y3) + (ua * (y2 - y1))) / (y4 - y3)
+
+    # Calculate the intersection point if the segments intersect
+    x = x1 + (ua * (x2 - x1))
+    y = y1 + (ua * (y2 - y1))
+
+    # Calculate the distance between the segments if they intersect
+    if ua >= 0 and ua <= 1 and ub >= 0 and ub <= 1:
+        return math.sqrt((x1 - x)**2 + (y1 - y)**2)
+
+    # Otherwise, return None
+    return None
 

@@ -42,16 +42,20 @@ while True:
     circles = cv.HoughCircles(gray, cv.HOUGH_GRADIENT, 1,20, param1=40, param2=20, minRadius=5, maxRadius=20)
 
     # Проверяем, были ли обнаружены круги
-    if circles is not None:
+    #if circles is not None:
             # Вызываем метод DrawCircle из класса DrawingMethods, который рисует круги на изображении
-            countCircles = methods.DrawingMethods.DrawCircle(frame, circles)
+            #countCircles = methods.DrawingMethods.DrawCircle(frame, circles)
 
     # Применяем фильтр Канни для выделения краев
     canny = cv.Canny(gray, 50, 200, None, 3)
     
     # Определяем линии на изображении с помощью метода HoughLinesP
     lines = cv.HoughLinesP(canny, rho = 1, theta = np.pi/180, threshold = None, minLineLength = 50, maxLineGap = 10) 
-    
+    if lines is not None:
+        for line in lines:
+           x1,y1,x2,y2 = line[0]
+           cv.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+
     # Проверяем, были ли обнаружены линии
     #if lines is not None:
     #    simlines = methods.MathematicalСalculationMethods.findSimmilarLines(lines,2)
@@ -64,14 +68,15 @@ while True:
             #methods.MathematicalСalculationMethods.averageLineWithDraws(frame, simlines)
             x1,y1,x2,y2 = methods.MathematicalСalculationMethods.averageLineReturnsLine(simlines)
             k, b = methods.MathematicalСalculationMethods.getLineEquation(x1,y1,x2,y2)
-            x1 = 0
-            if int(k*x1+b):
-                    y1 = int(k*x1+b)
-            x2 = width
-            if int(k*x2+b):
-                    y2 = int(k*x2+b)
-            print("start = ",x1,y1,"finish = ",x2,y2)
-            cv.line(frame,(x1,y1),(x2,y2),(255,0,0),2)
+            try:
+                x1 = 0
+                y1 = int(k*x1+b)
+                x2 = width
+                y2 = int(k*x2+b)
+                print("start = ",x1,y1,"finish = ",x2,y2)
+                cv.line(frame,(x1,y1),(x2,y2),(255,0,0),2)
+            except Exception:
+                pass
 
     
     # Отображаем изображение с кругами и линиями
