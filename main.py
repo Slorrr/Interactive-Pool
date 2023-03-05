@@ -56,7 +56,7 @@ while True:
     if lines is not None:
         for line in lines:
            x1,y1,x2,y2 = line[0]
-           cv.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 1)
+           #cv.line(frame, (x1, y1), (x2, y2), (0, 0, 255), 1)
 
     # Проверяем, были ли обнаружены линии
     #if lines is not None:
@@ -68,11 +68,11 @@ while True:
         simlines = methods.MathematicalСalculationMethods.findSimmilarLines(lines,2)
         if len(simlines) > 0:
             #methods.MathematicalСalculationMethods.averageLineWithDraws(frame, simlines)
-            x1,y1,x2,y2 = methods.MathematicalСalculationMethods.averageLineReturnsLine(simlines)
             simLine = x1,y1,x2,y2
-            
-
+            x1,y1,x2,y2 = methods.MathematicalСalculationMethods.averageLineReturnsLine(simlines)
             k, b = methods.MathematicalСalculationMethods.getLineEquation(x1,y1,x2,y2)
+            #print(x1,y1,x2,y2,k,b)
+
             try:
                 x1 = 0
                 y1 = int(k*x1+b)
@@ -81,12 +81,19 @@ while True:
                 #print("start = ",x1,y1,"finish = ",x2,y2)
                 cv.line(frame,(x1,y1),(x2,y2),(255,0,0),2)
                 avgLine = x1,y1,x2,y2
-            except Exception:
-                pass
-            try:
-                methods.MathematicalСalculationMethods.extendLineToIntersection2(width,height,originalFrame,frame,avgLine)
-            except:
-                pass
+
+                #k,b = methods.MathematicalСalculationMethods.getLineEquation(x1,y1,x2,y2)
+                #methods.MathematicalСalculationMethods.extendLineToIntersection2(width,height,originalFrame,frame,avgLine)
+                P1 = np.array([x1, y1])
+                P2 = np.array([x2, y2])
+                a = methods.MathematicalСalculationMethods.createLineIterator(P1,P2,height,width)
+                for i in a:
+                    cv.line(frame, (i[0], i[1]), (i[0], i[1]), (255, 0, 255), 1)
+                    b,g,r = originalFrame[i[1],i[0]]
+                    if b == 0 and g == 255 and r == 0:
+                        print("PIVOOOOOOO")
+            except Exception as ex:
+                print(ex)
 
     # Отображаем изображение с кругами и линиями
     cv.imshow("Camera", frame)
