@@ -6,7 +6,7 @@ import methods.DrawingMethods
 import methods.MathematicalСalculationMethods
 
 # Открываем видеопоток с камеры устройства под номером 0
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture("video.mp4")
 
 # Если видеопоток не может быть открыт, вызываем исключение
 if not cap.isOpened():
@@ -18,7 +18,7 @@ frame_count = 0
 countCircles = 0
 countLines = 0
 simlines = None
-
+avgRadius = 0
 # Начинаем бесконечный цикл
 while True:
 
@@ -44,9 +44,14 @@ while True:
 
     #Проверяем, были ли обнаружены круги
     if circles is not None:
-            #Вызываем метод DrawCircle из класса DrawingMethods, который рисует круги на изображении
-            countCircles = methods.DrawingMethods.DrawCircle(frame, circles)
-            methods.DrawingMethods.DrawCircle(originalFrame, circles)
+        #Вызываем метод DrawCircle из класса DrawingMethods, который рисует круги на изображении
+        countCircles = methods.DrawingMethods.DrawCircle(frame, circles)
+        methods.DrawingMethods.DrawCircle(originalFrame, circles)
+        print(type(circles))
+    sumRadius = 0
+    for (x,y,r) in circles:
+        sumRadius += r
+    avgRadius = sumRadius / countCircles
 
     # Применяем фильтр Канни для выделения краев
     canny = cv.Canny(gray, 50, 200, None, 3)
@@ -70,15 +75,14 @@ while True:
             #methods.MathematicalСalculationMethods.averageLineWithDraws(frame, simlines)
             simLine = x1,y1,x2,y2
             x1,y1,x2,y2 = methods.MathematicalСalculationMethods.averageLineReturnsLine(simlines)
-            k, b = methods.MathematicalСalculationMethods.getLineEquation(x1,y1,x2,y2)
-            #print(x1,y1,x2,y2,k,b)
-
             try:
+                k, b = methods.MathematicalСalculationMethods.getLineEquation(x1,y1,x2,y2)
+                #print(x1,y1,x2,y2,k,b)
                 x1 = 0
                 y1 = int(k*x1+b)
                 x2 = width
                 y2 = int(k*x2+b)
-                #print("start = ",x1,y1,"finish = ",x2,y2)
+                #print("start = ",x1,y1,"finish = ",x2,ye2)
                 cv.line(frame,(x1,y1),(x2,y2),(255,0,0),2)
                 avgLine = x1,y1,x2,y2
 
@@ -91,9 +95,10 @@ while True:
                     cv.line(frame, (i[0], i[1]), (i[0], i[1]), (255, 0, 255), 1)
                     b,g,r = originalFrame[i[1],i[0]]
                     if b == 0 and g == 255 and r == 0:
-                        print("PIVOOOOOOO")
-            except Exception as ex:
-                print(ex)
+                        cv.putText(frame, 'detected', (50, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 1, cv.LINE_AA)
+            except Exception:
+                #print(ex)
+                pass
 
     # Отображаем изображение с кругами и линиями
     cv.imshow("Camera", frame)

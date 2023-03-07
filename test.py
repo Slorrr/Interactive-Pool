@@ -24,7 +24,7 @@ def extendLineToIntersection(width, height, frame, line):
             if k * plusX + b <= height and k * plusX + b >= 0:
                 plusX += 1
                 y = k * plusX + b
-
+                qweqw
                 print("plus point", plusX, k * plusX + b)
                 print("minus", minusX, k * minusX + b)
 

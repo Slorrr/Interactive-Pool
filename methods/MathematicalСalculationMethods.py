@@ -74,9 +74,13 @@ def averageLineWithDraws(image, lines):
 #intercept = b
 #y = kx + b
 def getLineEquation(x1,y1,x2,y2):
-    slope = (y2 - y1) / (x2 - x1)
-    intercept = y1 - slope * x1
-    return (slope, intercept)
+    try:
+        if (x2 - x1) != 0:
+            slope = (y2 - y1) / (x2 - x1)
+            intercept = y1 - slope * x1
+            return (slope, intercept)
+    except Exception:
+        pass
 
 
 def DistanceBetweenSegments(start1, end1, start2, end2):
@@ -215,5 +219,11 @@ def extendLineToIntersection2(width, height, originalFrame, frame, line):
         if b == 0 and g == 255 and r == 255:
             cv2.putText(frame, 'YEAH', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
-    #else:
-    #    break
+def avgRadius (circles, countCircles):
+    sumRadius = 0
+    circles = np.round(circles[0, :].astype("int"))
+    try:
+        if circles is not None:
+            for (x,y,r) in circles:
+                sumRadius += r
+        return sumRadius / countCircles
