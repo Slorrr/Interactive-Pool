@@ -1,15 +1,17 @@
 import math
 import cv2
-import copy
 import numpy as np
 
+# Найти угол между точками
 def findAngleFromPoints(x1,y1,x2,y2):
     return math.degrees(math.atan2(y2 - y1, x2 - x1))
 
+# Найти угол отрезка
 def findAngelFromLine(line):
     x1,y1,x2,y2 = line
     return math.degrees(math.atan2(y2 - y1, x2 - x1))
 
+# Найти "похожие" отрезки
 def findSimmilarLines(linesArray,maxDiff = 3):
     #Количество "похожих" отрезков
     avgCount = 0
@@ -28,6 +30,7 @@ def findSimmilarLines(linesArray,maxDiff = 3):
                 deg2 = findAngelFromLine(linesArray[j][0])
                 if deg2 == 90 or deg2 == 180:
                     break
+                # Сравниваем углы двух отрезков с заданной погрешностью
                 if (abs(deg1-deg2) < maxDiff) or (abs(deg1-deg2) > 360-maxDiff):
                     count += 1
                     lines.append(linesArray[j])
@@ -36,6 +39,7 @@ def findSimmilarLines(linesArray,maxDiff = 3):
             maxLines = lines
     return maxLines
 
+# Найти "среднюю" линию
 def averageLineReturnsLine(lines):
     x1_sum = 0
     y1_sum = 0
@@ -53,6 +57,7 @@ def averageLineReturnsLine(lines):
     y2_avg = y2_sum // len(lines)
     return(x1_avg,y1_avg,x2_avg,y2_avg)
 
+# Найти "среднюю" линию и отрисовать ее
 def averageLineWithDraws(image, lines):
     x1_sum = 0
     y1_sum = 0
@@ -70,9 +75,7 @@ def averageLineWithDraws(image, lines):
     y2_avg = y2_sum // len(lines)
     cv2.line(image, (x1_avg, y1_avg), (x2_avg, y2_avg), (0, 0, 255), 2)
 
-#slope = k
-#intercept = b
-#y = kx + b
+# Найти коэффиценты линейного уравнения
 def getLineEquation(x1,y1,x2,y2):
     try:
         if (x2 - x1) != 0:
@@ -82,78 +85,74 @@ def getLineEquation(x1,y1,x2,y2):
     except Exception:
         pass
 
-
+# Найти расстояние между параллельными отрезками
 def DistanceBetweenSegments(start1, end1, start2, end2):
     x1, y1 = start1
     x2, y2 = end1
     x3, y3 = start2
     x4, y4 = end2
 
-    # Calculate the denominator in the formula
+    # Вычисление знаменателя в формуле
     denominator = ((x2 - x1) * (y4 - y3)) - ((y2 - y1) * (x4 - x3))
 
-    # If the denominator is zero, the segments are parallel
+    # Если знаменатель равен нулю, то отрезки параллельны
     if denominator == 0:
         return None
 
-    # Calculate the numerator in the formula
+    # Вычисление числителя в формуле
     numerator = ((y1 - y3) * (x4 - x3)) - ((x1 - x3) * (y4 - y3))
 
-    # Calculate the fraction along the first segment
+    # Вычисление дроби вдоль первого сегмента
     ua = numerator / denominator
 
-    # Calculate the fraction along the second segment
+    # Вычисление дроби вдоль второго сегмента
     ub = ((y1 - y3) + (ua * (y2 - y1))) / (y4 - y3)
 
-    # Calculate the intersection point if the segments intersect
+    # Вычисление точки пересечения, если отрезки пересекаются
     x = x1 + (ua * (x2 - x1))
     y = y1 + (ua * (y2 - y1))
 
-    # Calculate the distance between the segments if they intersect
+    # Вычисление расстояния между сегментами, если они пересекаются
     if ua >= 0 and ua <= 1 and ub >= 0 and ub <= 1:
         return math.sqrt((x1 - x)**2 + (y1 - y)**2)
 
-    # Otherwise, return None
     return None
 
-
-
 def createLineIterator(P1, P2, height, width):
-   #define local variables for readability
-   imageH = height
-   imageW = width
-   P1X = P1[0]
-   P1Y = P1[1]
-   P2X = P2[0]
-   P2Y = P2[1]
+    imageH = height
+    imageW = width
+    P1X = P1[0]
+    P1Y = P1[1]
+    P2X = P2[0]
+    P2Y = P2[1]
 
-   #difference and absolute difference between points
-   #used to calculate slope and relative location between points
-   dX = P2X - P1X
-   dY = P2Y - P1Y
-   dXa = np.abs(dX)
-   dYa = np.abs(dY)
+    # Разница и абсолютная разница между точками
+    # используется для расчета наклона и относительного расположения между точками
+    dX = P2X - P1X
+    dY = P2Y - P1Y
+    dXa = np.abs(dX)
+    dYa = np.abs(dY)
 
-   #predefine numpy array for output based on distance between points
-   itbuffer = np.empty(shape=(np.maximum(dYa,dXa),2),dtype=np.int32)
-   itbuffer.fill(-1)
+    # Предопределить массив numpy для вывода на основе расстояния между точками
+    itbuffer = np.empty(shape=(np.maximum(dYa,dXa),2),dtype=np.int32)
+    itbuffer.fill(-1)
 
-   #Obtain coordinates along the line using a form of Bresenham's algorithm
-   negY = P1Y > P2Y
-   negX = P1X > P2X
-   if P1X == P2X: #vertical line segment
+    # Получить координаты вдоль линии, используя форму алгоритма Брезенхэма
+    negY = P1Y > P2Y
+    negX = P1X > P2X
+    if P1X == P2X: # Вертикальный отрезок
        itbuffer[:,0] = P1X
        if negY:
            itbuffer[:,1] = np.arange(P1Y - 1,P1Y - dYa - 1,-1)
        else:
            itbuffer[:,1] = np.arange(P1Y+1,P1Y+dYa+1)              
-   elif P1Y == P2Y: #horizontal line segment
+    elif P1Y == P2Y: # Горизонтальный отрезок
        itbuffer[:,1] = P1Y
        if negX:
            itbuffer[:,0] = np.arange(P1X-1,P1X-dXa-1,-1)
        else:
            itbuffer[:,0] = np.arange(P1X+1,P1X+dXa+1)
-   else: #diagonal line segment
+    else: # Диогональный отрезок
        steepSlope = dYa > dXa
        if steepSlope:
            slope = dX.astype(np.float32)/dY.astype(np.float32)
@@ -170,60 +169,49 @@ def createLineIterator(P1, P2, height, width):
                itbuffer[:,0] = np.arange(P1X+1,P1X+dXa+1)
            itbuffer[:,1] = (slope*(itbuffer[:,0]-P1X)).astype(int) + P1Y
 
-   #Remove points outside of image
-   colX = itbuffer[:,0]
-   colY = itbuffer[:,1]
-   mask = (colX >= 0) & (colY >=0) & (colX<imageW) & (colY<imageH)
-   itbuffer = itbuffer[mask]
+    # Удалить точки вне кадра
+    colX = itbuffer[:,0]
+    colY = itbuffer[:,1]
+    mask = (colX >= 0) & (colY >=0) & (colX<imageW) & (colY<imageH)
+    itbuffer = itbuffer[mask]
+    return itbuffer
 
-   return itbuffer
-
-
-def extendLineToIntersection2(width, height, originalFrame, frame, line):
-    x1,y1,x2,y2 = line
-    #print(x1,y1,x2,y2)
-    k,b = getLineEquation(x1,y1,x2,y2)
-    #print(k,b)
-    plusX = x1
-    
-    ###
-    #while True:
-    #    if plusX+1 < width:
-    #        plusX += 1
-    #        plusY = round(k*plusX)+int(b)
-    #        flag = False
-    #        #print(str(width),str(plusX), str(height), str(plusY))
-    #        #fuckingFrame = copy.deepcopy(originalFrame)
-    #        #print(k,b)
-    #        #r,g,b = fuckingFrame[int(k*plusX+b),plusX]
-    #        if plusY < 480:
-    #            b,g,r = originalFrame[plusY,plusX]
-    #            cv2.line(frame,(plusX,plusY),(plusX,plusY),(255,0,0),2)
-    #            if g == 255 and r == 0 and b == 0:
-    #                print("PIIIIIIIIIIIIVVVVVOOOOOOO")
-    #                print("PIIIIIIIIIIIIVVVVVOOOOOOO")
-    #                print("PIIIIIIIIIIIIVVVVVOOOOOOO")
-    #                print("PIIIIIIIIIIIIVVVVVOOOOOOO")
-    #                flag = True
-    #                cv2.putText(frame, 'YEAH', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-    
-    coordinates = []
-
-    num_points = max(x2,x1) - min(x2,x1)
-
-    x_values = [x1 + (x2 - x1) * i / (num_points - 1) for i in range(num_points)]
-    y_values = [y1 + (y2 - y1) * i / (num_points - 1) for i in range(num_points)]
-
-    for i in range(num_points):
-        b,g,r = originalFrame[y_values[i],x_values[i]]
-        if b == 0 and g == 255 and r == 255:
-            cv2.putText(frame, 'YEAH', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
-
+# Найти средний радиус
 def avgRadius (circles, countCircles):
-    sumRadius = 0
-    circles = np.round(circles[0, :].astype("int"))
-    try:
-        if circles is not None:
-            for (x,y,r) in circles:
-                sumRadius += r
-        return sumRadius / countCircles
+    if circles is not None:
+        sumRadius = 0
+        circles = np.round(circles[0, :].astype("int"))
+        try:
+            if circles is not None:
+                for (x,y,r) in circles:
+                    sumRadius += r
+            return sumRadius / countCircles
+        except Exception:
+            pass
+
+# Определить в какой сторны кадра начинается кий
+def needToReverse(pointsOfLine, height, frame,originalFrame):
+    k = 0
+    sumB = 0
+    sumG = 0
+    sumR = 0
+    if pointsOfLine is not None:
+        pointsOfLine.sort()
+        for point in pointsOfLine:
+            if k < int(height/10):
+                x,y = point[0],point[1]
+                cv2.line(frame, (x, y), (x, y), (0, 0, 255), 2)
+                b,g,r = originalFrame[y,x]
+                sumB += b
+                sumG += g
+                sumR += r
+                k += 1
+        b = sumB / k
+        g = sumG / k
+        r = sumR / k
+        if g > r:
+            # Кий справа
+            return True
+        else:
+            # Кий слева
+            return False
